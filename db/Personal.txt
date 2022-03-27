@@ -1,0 +1,6 @@
+1/Manager/123/false
+1/Operator/123/false
+2/Manager/123/false
+2/Operator/123/false
+3/Manager/123/false
+3/Operator/123/false
