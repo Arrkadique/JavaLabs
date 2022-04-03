@@ -1,12 +1,12 @@
 package com.financialsystemmanagement.main;
 
 import com.financialsystemmanagement.database.Database;
-import com.financialsystemmanagement.enterprices.Bank;
-import com.financialsystemmanagement.interfaces.IBank;
-import com.financialsystemmanagement.interfaces.IClient;
+import com.financialsystemmanagement.enterprices.Banks;
+import com.financialsystemmanagement.interfaces.Bank;
+import com.financialsystemmanagement.interfaces.Client;
 import com.financialsystemmanagement.users.BankClient;
 
-import java.util.ArrayList;
+import java.io.IOException;
 import java.util.List;
 import java.util.Scanner;
 
@@ -32,7 +32,7 @@ public class UI {
     }
 
     public static void showAllBanks(List<String> lines, Database db){
-        Bank b;
+        Banks b;
         for (String s: lines) {
             b = db.deserializeBank(s);
             b.showInfo();
@@ -50,36 +50,34 @@ public class UI {
     public static void bankStartLogInMenu(){
         System.out.println("What would you like to do?\n" +
                 "1. Log in\n" +
-                "2. Add new client\n" +
-                "3. Show all clients");
+                "2. Log in as a personal\n" +
+                "3. Add new client\n" +
+                "4. Show all clients\n" +
+                "5. Exit");
     }
 
-    public static List<Integer> getBankClientsList(Bank bank,List<String> clients, Database db){
-        List<Integer> id = new ArrayList<>();
-        for (int a: bank.getClientsList()) {
-            for (String s: clients) {
-                for (int b: db.deserializeClient(s).getBanksList()) {
-                    if(b == a){
-                        id.add(db.deserializeClient(s).getUserId());
-                    }
-                }
-            }
-        }
-        return id;
+    public static void bankClientMenu(){
+        System.out.println("What would you like to do?\n" +
+                "1. Transfer\n" +
+                "2. Withdrawal\n" +
+                "3. Your info\n" +
+                "4. Exit");
     }
 
-    public static BankClient bankLoginMenu(List<String> clients, IClient bc, Bank b){
+    public static BankClient bankLoginMenu(List<String> clients, Client bc, Banks b) throws IOException{
         System.out.println("---------------\n" +
                 "Welcome to " + b.getEnterpriseName());
         Scanner in = new Scanner(System.in);
         System.out.println("Enter your name: ");
         String name = in.nextLine();
-        if(bc.findClientByName(clients, name) != null){
-            System.out.println("Enter password: " + bc.findClientByName(clients, name).getPassword());
-            if(bc.findClientByName(clients, name).getPassword().equals(in.nextLine())){
-                return bc.findClientByName(clients, name);
-            }else {
-                System.out.println("\nWrong Password!");
+        if(bc.findClientByName(name) != null){
+            if(bc.isInBank(bc.findClientByName(name), b)) {
+                System.out.println("Enter password: " + bc.findClientByName(name).getPassword());
+                if (bc.findClientByName(name).getPassword().equals(in.nextLine())) {
+                    return bc.findClientByName(name);
+                } else {
+                    System.out.println("\nWrong Password!");
+                }
             }
         } else {
             System.out.println("\nThere aren't client with this name!");
@@ -87,7 +85,25 @@ public class UI {
         return null;
     }
 
-    public static int choosingBank(List<String> b, IBank br, Database db){
+    public static String bankLoginPersonalMenu(Banks b){
+        Scanner in = new Scanner(System.in);
+        System.out.println("---------------\n" +
+                "Welcome to " + b.getEnterpriseName());
+        System.out.println("Choose a person: \n" +
+                "1. Admin\n" +
+                "2. Operator.\n" +
+                "3. Manager ");
+        String str;
+        while(true){
+            str = in.nextLine();
+            if(str.equals("1") || str.equals("2") || str.equals("3")){
+                break;
+            }
+        }
+        return str;
+    }
+
+    public static int choosingBank(List<String> b, Bank br, Database db) throws IOException {
         Scanner in = new Scanner(System.in);
         String id;
         for (String s : b) {
@@ -97,8 +113,8 @@ public class UI {
         while (true) {
             id = in.nextLine();
             if (!isInteger(id)) {
-            } else if(br.findBankById(b, Integer.parseInt(id)) != null) {
-                br.findBankById(b, Integer.parseInt(id)).showInfo();
+            } else if(br.findBankById(Integer.parseInt(id)) != null) {
+                br.findBankById(Integer.parseInt(id)).showInfo();
                 System.out.println("---------------");
                 break;
             } else {

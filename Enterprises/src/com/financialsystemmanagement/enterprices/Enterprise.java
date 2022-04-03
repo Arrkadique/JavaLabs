@@ -1,10 +1,10 @@
 package com.financialsystemmanagement.enterprices;
 
 public class Enterprise {
-    private final String EnterpriseType;
-    private final String EnterpriseName;
-    private final String UNP;
-    private final String Address;
+    private String EnterpriseType;
+    private String EnterpriseName;
+    private String UNP;
+    private String Address;
 
     public Enterprise(String EnterpriseType, String EnterpriseName, String UNP, String Address){
         this.EnterpriseName = EnterpriseName;
@@ -12,6 +12,21 @@ public class Enterprise {
         this.UNP = UNP;
         this.Address = Address;
     }
+
+    public Enterprise(){}
+
+    public String getEnterpriseType() {
+        return EnterpriseType;
+    }
+
+    public String getUNP() {
+        return UNP;
+    }
+
+    public String getAddress() {
+        return Address;
+    }
+
 
     public String getEnterpriseName() {
         return EnterpriseName;

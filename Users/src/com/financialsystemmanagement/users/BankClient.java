@@ -9,10 +9,12 @@ public class BankClient extends User{
     private String email;
     private List<Integer> banksList;
     private int moneyCount = 5000;
+    private boolean isBlocked = false;
 
     public BankClient(int userId, String personalName, String password, String passportNumber, String identificationNumber,
-                      String phoneNumber, String email, int moneyCount, List<Integer> banksList){
+                      String phoneNumber, String email, int moneyCount, List<Integer> banksList, boolean isBlocked){
         super(personalName,password, userId);
+        this.isBlocked = isBlocked;
         this.passportNumber = passportNumber;
         this.identificationNumber = identificationNumber;
         this.phoneNumber = phoneNumber;
@@ -21,18 +23,12 @@ public class BankClient extends User{
         this.moneyCount = moneyCount;
     }
 
-    public BankClient(int userId, String personalName, String password, String passportNumber, String identificationNumber,
-                      String phoneNumber, String email){
-        super(personalName,password, userId);
-        this.passportNumber = passportNumber;
-        this.identificationNumber = identificationNumber;
-        this.phoneNumber = phoneNumber;
-        this.email = email;
-        this.banksList.add(0);
+    public void clientInfo(){
+        System.out.println(getUserId() + ". " + getPersonalName() + " " + getPhoneNumber() + " " + moneyCount);
     }
 
-    public void clientInfo(){
-        System.out.println(getPersonalName() + " " + getPhoneNumber() + " " + moneyCount);
+    public boolean getIsBlocked() {
+        return isBlocked;
     }
 
     public List<Integer> getBanksList() {

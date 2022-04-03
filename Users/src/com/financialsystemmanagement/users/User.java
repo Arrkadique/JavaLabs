@@ -11,6 +11,10 @@ abstract public class User{
         this.userId = userId;
     }
 
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     public int getUserId() {
         return userId;
     }
@@ -24,3 +28,4 @@ abstract public class User{
     }
 
 }
+
