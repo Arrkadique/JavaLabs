@@ -2,6 +2,8 @@ package com.financialsystemmanagement.database;
 
 import com.financialsystemmanagement.clientbuilder.ClientBuilder;
 import com.financialsystemmanagement.enterprices.Banks;
+import com.financialsystemmanagement.operations.Credit;
+import com.financialsystemmanagement.operations.Installment;
 import com.financialsystemmanagement.users.BankClient;
 import com.financialsystemmanagement.users.BankManager;
 import com.financialsystemmanagement.users.BankOperator;
@@ -13,17 +15,29 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Database{
-    private String clientRepositoryPath;
-    private String bankRepositoryPath;
-    private String personalRepositoryPath;
-    private String changesRepositoryPath;
+    private final String clientRepositoryPath;
+    private final String bankRepositoryPath;
+    private final String personalRepositoryPath;
+    private final String changesRepositoryPath;
+    private final String logsRepositoryPath;
+    private final String installmentsRepositoryPath;
+    private final String creditsRepositoryPath;
 
-    public Database(String bankRepositoryPath, String clientRepositoryPath, String personalRepositoryPath,
-                    String changesRepositoryPath){
-        this.bankRepositoryPath = bankRepositoryPath;
-        this.personalRepositoryPath = personalRepositoryPath;
-        this.clientRepositoryPath = clientRepositoryPath;
-        this.changesRepositoryPath = changesRepositoryPath;
+    public Database(){
+        this.bankRepositoryPath = "/home/arkady/dev/java/FinancialSystemManagement/" +
+                "FinancialSystemManagement/db/Banks.txt";
+        this.clientRepositoryPath = "/home/arkady/dev/java/FinancialSystemManagement/" +
+                "FinancialSystemManagement/db/Clients.txt";
+        this.personalRepositoryPath = "/home/arkady/dev/java/FinancialSystemManagement/" +
+                "FinancialSystemManagement/db/Personal.txt";
+        this.changesRepositoryPath = "/home/arkady/dev/java/FinancialSystemManagement/" +
+                "FinancialSystemManagement/db/Changes.txt";
+        this.logsRepositoryPath = "/home/arkady/dev/java/FinancialSystemManagement/" +
+                "FinancialSystemManagement/db/Logs.txt";
+        this.installmentsRepositoryPath = "/home/arkady/dev/java/FinancialSystemManagement/" +
+                "FinancialSystemManagement/db/Installments.txt";
+        this.creditsRepositoryPath= "/home/arkady/dev/java/FinancialSystemManagement/" +
+                "FinancialSystemManagement/db/Credits.txt";
     }
 
     public void saveToBank(List<String> bankLines) throws IOException{
@@ -42,6 +56,16 @@ public class Database{
         Files.write(Paths.get(changesRepositoryPath), changesLines);
     }
 
+    public void saveToLogs(List<String> logsLines) throws IOException{
+        Files.write(Paths.get(logsRepositoryPath), logsLines);
+    }
+    public void saveToInstallments(List<String> installmentsLines) throws IOException{
+        Files.write(Paths.get(installmentsRepositoryPath), installmentsLines);
+    }
+    public void saveToCredits(List<String> creditsLines) throws IOException{
+        Files.write(Paths.get(creditsRepositoryPath), creditsLines);
+    }
+
     public List<String> loadFromBank() throws IOException {
         return Files.readAllLines(Paths.get(bankRepositoryPath));
     }
@@ -58,10 +82,23 @@ public class Database{
         return Files.readAllLines(Paths.get(changesRepositoryPath));
     }
 
+    public List<String> loadFromLogs() throws IOException {
+        return Files.readAllLines(Paths.get(logsRepositoryPath));
+    }
+
+    public List<String> loadFromInstallments() throws IOException {
+        return Files.readAllLines(Paths.get(installmentsRepositoryPath));
+    }
+
+    public List<String> loadFromCredits() throws IOException {
+        return Files.readAllLines(Paths.get(creditsRepositoryPath));
+    }
+
+
     public Banks deserializeBank(String lines){
         String[] buf = lines.split("/");
         String[] clientBuf = buf[6].split("%");
-        List<Integer> list = new ArrayList<Integer>();
+        List<Integer> list = new ArrayList<>();
         for (String a: clientBuf) {
             list.add(Integer.parseInt(a));
         }
@@ -101,6 +138,27 @@ public class Database{
         return null;
     }
 
+    public Installment deserializeInstallment(String lines){
+        String[] installment = lines.split("/");
+        return new Installment(Integer.parseInt(installment[0]),Integer.parseInt(installment[1]),
+                Integer.parseInt(installment[2]));
+    }
+
+    public Credit deserializeCredit(String lines){
+        String[] credit = lines.split("/");
+        return new Credit(Integer.parseInt(credit[0]),Integer.parseInt(credit[1]),
+                Integer.parseInt(credit[2]), Integer.parseInt(credit[3]),Boolean.parseBoolean(credit[4]));
+    }
+
+    public String serializeInstallment(Installment installment){
+        return installment.getUserId() + "/" + installment.getSum() + "/" + installment.getTerms();
+    }
+
+    public String serializeCredit(Credit credit){
+        return credit.getUserId() + "/" + credit.getSum() + "/" + credit.getTerms() + "/" +
+                credit.getCommission() + "/" + credit.isConfirmed();
+    }
+
     public String serializePersonal(BankManager bankManager){
         return bankManager.getUserId() + "/" + bankManager.getPersonalName() + "/" + bankManager.getPassword()
                 + "/" + bankManager.getIsCancel();
@@ -112,9 +170,9 @@ public class Database{
     }
 
     public String serializeClient(BankClient client){
-        String bankList = "";
+        StringBuilder bankList = new StringBuilder();
         for (int s: client.getBanksList()) {
-            bankList += s + "";
+            bankList.append(s);
         }
         return client.getUserId() + "/" + client.getPersonalName() + "/" + client.getPassword() + "/" +
                 client.getPassportNumber() + "/" + client.getIdentificationNumber() + "/" +
@@ -123,9 +181,9 @@ public class Database{
     }
 
     public String serializeBank(Banks banks){
-        String clientList = "";
+        StringBuilder clientList = new StringBuilder();
         for (int s: banks.getClientsList()) {
-            clientList += s + "%";
+            clientList.append(s).append("%");
         }
         return banks.getBankId() + "/" + banks.getEnterpriseType() + "/" + banks.getEnterpriseName() + "/" +
                 banks.getBikOfBank() + "/" + banks.getAddress() + "/" + banks.getUNP() + "/" + clientList;

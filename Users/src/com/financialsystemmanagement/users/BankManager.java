@@ -6,10 +6,6 @@ public class BankManager extends BankOperator{
         super(personalName, password, bankId, isCanceled);
     }
 
-    public void confirmCredit(){
-
-    }
-
     public void cancelTpSpecialistAction(){
 
     }

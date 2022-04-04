@@ -3,9 +3,11 @@ package com.financialsystemmanagement.main;
 import com.financialsystemmanagement.database.Database;
 import com.financialsystemmanagement.interfaces.Bank;
 import com.financialsystemmanagement.interfaces.Client;
+import com.financialsystemmanagement.interfaces.Operations;
 import com.financialsystemmanagement.interfaces.Personal;
 import com.financialsystemmanagement.repositories.BankRepository;
 import com.financialsystemmanagement.repositories.ClientRepository;
+import com.financialsystemmanagement.repositories.OperationsRepository;
 import com.financialsystemmanagement.repositories.PersonalRepository;
 import com.financialsystemmanagement.users.BankClient;
 
@@ -28,15 +30,8 @@ public class Main{
     public static void main(String[] args) throws IOException {
 
         Scanner in = new Scanner(System.in);
-        String Banks = "/home/arkady/dev/java/FinancialSystemManagement/" +
-                "FinancialSystemManagement/db/Banks.txt";
-        String Clients = "/home/arkady/dev/java/FinancialSystemManagement/" +
-                "FinancialSystemManagement/db/Clients.txt";
-        String Personal = "/home/arkady/dev/java/FinancialSystemManagement/" +
-                "FinancialSystemManagement/db/Personal.txt";
-        String Changes = "/home/arkady/dev/java/FinancialSystemManagement/" +
-                "FinancialSystemManagement/db/Changes.txt";
-        Database db = new Database(Banks, Clients, Personal, Changes);
+        Database db = new Database();
+        Operations operationsRP = new OperationsRepository(db);
         Personal personalRP = new PersonalRepository(db);
         Bank bankRP = new BankRepository(db);
         Client clientRP = new ClientRepository(db);
@@ -45,12 +40,12 @@ public class Main{
         String choice;
         BankClient loginClient;
         int id;
-        boolean isCanceled = false;
-        String number;
+        boolean isCanceled;
 
         while(true){
             mainMenu();
             personalRP.showTransfers(db.loadFromChanges(), clientRP);
+            operationsRP.showInstallments(clientRP);
             choice = in.nextLine();
             switch (choice) {
                 case "1":
@@ -86,7 +81,7 @@ public class Main{
                                     while (true) {
                                         choice = in.nextLine();
                                         if(choice.equals("1") || choice.equals("2") || choice.equals("3")
-                                                || choice.equals("4")|| choice.equals("5")){
+                                                || choice.equals("4")|| choice.equals("5")|| choice.equals("6")){
                                             break;
                                         }
                                     }
@@ -102,8 +97,14 @@ public class Main{
                                             System.out.println("What sum do you need?");
                                             clientRP.moneyWithdrawal(loginClient);
                                         }break;
-                                        case "3": loginClient.clientInfo();break;
-                                        case "4": isCanceled = true;break;
+                                        case "5": loginClient.clientInfo();break;
+                                        case "6": isCanceled = true;break;
+                                        case "3":{
+                                            operationsRP.takeInstallment(loginClient);
+                                        }break;
+                                        case "4":{
+                                            operationsRP.takeCredit(loginClient);
+                                        }break;
                                     }
                                     if(isCanceled) {
                                         choice = "0";
@@ -143,9 +144,35 @@ public class Main{
                                         }
                                         if(str.equals("1"))
                                         personalRP.showTransfers(db.loadFromChanges(), clientRP);
-                                        else personalRP.cancelAction(id, clientRP);
+                                        else {
+                                            personalRP.cancelOperatorAction(id, clientRP);
+                                            personalRP.findOperatorByBankId(id).setCanceled(true);
+                                        }
                                         choice = "0";
-                                    }
+                                    }break;
+                                    case "3":{
+                                        System.out.println("What would you like to do?\n" +
+                                                "1. Show transfers\n" +
+                                                "2. Cancel action\n" +
+                                                "3. Confirm credit");
+                                        while (true){
+                                            str = in.nextLine();
+                                            if(str.equals("1") || str.equals("2")
+                                                    || str.equals("3")){
+                                                break;
+                                            }
+                                            System.out.println("Try again!");
+                                        }
+                                        if(str.equals("1"))
+                                            personalRP.showTransfers(db.loadFromChanges(), clientRP);
+                                        else if(str.equals("2")){
+                                            personalRP.cancelManagerAction(id, clientRP);
+                                            personalRP.findManagerByBankId(id).setCanceled(true);
+                                        }else{
+                                            personalRP.confirmCredit(clientRP);
+                                        }
+                                        choice = "0";
+                                    }break;
                                 }
                             }break;
                             case "3":

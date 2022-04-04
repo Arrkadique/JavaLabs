@@ -8,6 +8,11 @@ public class BankOperator extends User{
         this.isCanceled = isCanceled;
     }
 
+
+    public void setCanceled(boolean canceled) {
+        isCanceled = canceled;
+    }
+
     public boolean getIsCancel(){
         return isCanceled;
     }

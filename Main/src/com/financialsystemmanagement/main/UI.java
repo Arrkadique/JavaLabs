@@ -60,8 +60,10 @@ public class UI {
         System.out.println("What would you like to do?\n" +
                 "1. Transfer\n" +
                 "2. Withdrawal\n" +
-                "3. Your info\n" +
-                "4. Exit");
+                "3. Take an installment\n" +
+                "4. Take a credit\n" +
+                "5. Your info\n" +
+                "6. Exit");
     }
 
     public static BankClient bankLoginMenu(List<String> clients, Client bc, Banks b) throws IOException{
