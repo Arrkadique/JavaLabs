@@ -23,3 +23,4 @@ New account added!
 Credit was taken!
 Action was canceled!
 Transfer was made!
+Transfer was made!

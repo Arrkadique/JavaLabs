@@ -15,14 +15,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Scanner;
 
-import static com.financialsystemmanagement.main.UI.bankClientMenu;
-import static com.financialsystemmanagement.main.UI.bankLoginMenu;
-import static com.financialsystemmanagement.main.UI.bankLoginPersonalMenu;
-import static com.financialsystemmanagement.main.UI.bankStartLogInMenu;
-import static com.financialsystemmanagement.main.UI.choosingBank;
-import static com.financialsystemmanagement.main.UI.mainMenu;
-import static com.financialsystemmanagement.main.UI.showAllBanks;
-import static com.financialsystemmanagement.main.UI.showAllClients;
+import static com.financialsystemmanagement.main.UI.*;
 
 
 public class Main{
@@ -89,8 +82,9 @@ public class Main{
                                     switch (choice){
                                         case "1":{
                                             System.out.println("Making a transfer to:");
-                                            for (int a : bankRP.findBankById(id).getClientsList()) {
-                                                clientRP.findClientById(a).clientInfo();
+                                            for (String a : clients) {
+                                                clientRP.findClientById(db.deserializeClient(a).getUserId()).
+                                                        clientInfo();
                                             }
                                             clientRP.makeTransfer(loginClient, id);
                                         } break;
@@ -173,7 +167,7 @@ public class Main{
                                             case "1":
                                                 personalRP.showTransfers(db.loadFromChanges(), clientRP); break;
                                             case "2":
-                                                personalRP.cancelOperatorAction(id, clientRP);
+                                                personalRP.cancelManagerAction(id, clientRP);
                                                 personalRP.findOperatorByBankId(id).setCanceled(true); break;
                                             case "4": operationsRP.showCredits(clientRP); break;
                                             case "5": operationsRP.showInstallments(clientRP);break;
