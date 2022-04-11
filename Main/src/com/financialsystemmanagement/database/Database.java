@@ -109,33 +109,34 @@ public class Database{
     public BankClient deserializeClient(String lines){
         ClientBuilder builder = new ClientBuilder();
         String[] buf = lines.split("/");
-        String[] bankBuf = buf[8].split("");
-        List<Integer> list = new ArrayList<>();
-        for (String s: bankBuf) {
-            list.add(Integer.parseInt(s));
-        }
         return builder.setUserId(Integer.parseInt(buf[0])).setPersonalName(buf[1]).setPassword(buf[2]).
                 setPassportNumber(buf[3]).setIdentificationNumber(buf[4]).setPhoneNumber(buf[5]).setEmail(buf[6]).
-                setMoneyCount(Integer.parseInt(buf[7])).setBankList(list).
+                setMoneyCount(Integer.parseInt(buf[7])).setBankId(Integer.parseInt(buf[8])).
                 setBlocked(Boolean.parseBoolean(buf[9])).getResult();
     }
 
-    public BankOperator deserializeOperator(String lines){
-        String[] personal = lines.split("/");
-        if(personal[1].equals("Operator")){
-            return new BankOperator(personal[1],personal[2],Integer.parseInt(personal[0]),
-                    Boolean.parseBoolean(personal[3]));
+    public List<BankOperator> deserializeOperator(List<String> lines){
+        List<BankOperator> lst = new ArrayList<BankOperator>();
+        for (String s:lines) {
+            String[] personal = s.split("/");
+            if(personal[1].equals("Operator")){
+                lst.add(new BankOperator(personal[1],personal[2],Integer.parseInt(personal[0]),
+                        Boolean.parseBoolean(personal[3])));
+            }
         }
-        return null;
+        return lst;
     }
 
-    public BankManager deserializeManager(String lines){
-        String[] personal = lines.split("/");
-        if(personal[1].equals("Manager")){
-            return new BankManager(personal[1],personal[2],Integer.parseInt(personal[0]),
-                    Boolean.parseBoolean(personal[3]));
+    public List<BankManager> deserializeManager(List<String> lines){
+        List<BankManager> lst = new ArrayList<BankManager>();
+        for (String s:lines) {
+            String[] personal = s.split("/");
+            if (personal[1].equals("Manager")) {
+                lst.add(new BankManager(personal[1], personal[2], Integer.parseInt(personal[0]),
+                        Boolean.parseBoolean(personal[3])));
+            }
         }
-        return null;
+        return lst;
     }
 
     public Installment deserializeInstallment(String lines){
@@ -170,14 +171,10 @@ public class Database{
     }
 
     public String serializeClient(BankClient client){
-        StringBuilder bankList = new StringBuilder();
-        for (int s: client.getBanksList()) {
-            bankList.append(s);
-        }
         return client.getUserId() + "/" + client.getPersonalName() + "/" + client.getPassword() + "/" +
                 client.getPassportNumber() + "/" + client.getIdentificationNumber() + "/" +
                 client.getPhoneNumber() + "/" + client.getEmail()+ "/" + client.getMoneyCount() + "/" +
-                bankList + "/" + client.getIsBlocked();
+                client.getBankId() + "/" + client.getIsBlocked();
     }
 
     public String serializeBank(Banks banks){

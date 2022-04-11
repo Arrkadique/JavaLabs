@@ -7,6 +7,7 @@ import com.financialsystemmanagement.interfaces.Client;
 import com.financialsystemmanagement.users.BankClient;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -63,23 +64,55 @@ public class UI {
                 "3. Take an installment\n" +
                 "4. Take a credit\n" +
                 "5. Your info\n" +
-                "6. Exit");
+                "6. Open new account\n" +
+                "7. Exit");
     }
 
-    public static BankClient bankLoginMenu(List<String> clients, Client bc, Banks b) throws IOException{
+    public static BankClient bankLoginMenu(List<String> clients, Client bc, Banks b, Database db) throws IOException{
         System.out.println("---------------\n" +
                 "Welcome to " + b.getEnterpriseName());
         Scanner in = new Scanner(System.in);
+        String id;
+        List<BankClient> buf = new ArrayList<>();
         System.out.println("Enter your name: ");
         String name = in.nextLine();
         if(bc.findClientByName(name) != null){
             if(bc.isInBank(bc.findClientByName(name), b)) {
-                System.out.println("Enter password: " + bc.findClientByName(name).getPassword());
-                if (bc.findClientByName(name).getPassword().equals(in.nextLine())) {
-                    return bc.findClientByName(name);
+                System.out.println("Enter password: " + bc.findClientByName(name).get(0).getPassword());
+                if (bc.findClientByName(name).get(0).getPassword().equals(in.nextLine())) {
+                    for (String s: clients) {
+                        if(db.deserializeClient(s).getPersonalName().equals(name) &&
+                                db.deserializeClient(s).getBankId() == b.getBankId()){
+                            buf.add(db.deserializeClient(s));
+                        }
+                    }
+                    if(buf.size() == 1) {
+                        return bc.findClientByName(name).get(0);
+                    } else {
+                        System.out.println("What account would wou like to choose?");
+                        for (BankClient c: buf) {
+                            System.out.println(c.getUserId() + ". " + c.getPersonalName() + " " + c.getMoneyCount());
+                        }
+                        System.out.println("Enter id:");
+                        while (true){
+                            id = in.nextLine();
+                            if(isInteger(id)){
+                                for (BankClient s: buf) {
+                                    if(s.getUserId() == Integer.parseInt(id)){
+                                        return s;
+                                    }
+                                }
+                                System.out.println("Try again!");
+                            } else {
+                                System.out.println("Try again!");
+                            }
+                        }
+                    }
                 } else {
                     System.out.println("\nWrong Password!");
                 }
+            } else {
+                System.out.println("123");
             }
         } else {
             System.out.println("\nThere aren't client with this name!");

@@ -8,6 +8,7 @@ import com.financialsystemmanagement.operations.Installment;
 import com.financialsystemmanagement.users.BankClient;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -36,6 +37,7 @@ public class OperationsRepository implements Operations {
 
     public void takeInstallment(BankClient bankClient) throws IOException {
         List<String> fromInstallment = db.loadFromInstallments();
+        List<String> fromLogs = db.loadFromLogs();
         Scanner in = new Scanner(System.in);
         System.out.println("What sum do you need?");
         String sum, choice;
@@ -65,13 +67,16 @@ public class OperationsRepository implements Operations {
                 System.out.println("Try again!");
             }
         }
+        fromLogs.add("Installment was taken!");
         fromInstallment.add(db.serializeInstallment(new Installment(bankClient.getUserId(), Integer.parseInt(sum),
                 Integer.parseInt(choice))));
+        db.saveToLogs(fromLogs);
         db.saveToInstallments(fromInstallment);
     }
 
     public void takeCredit(BankClient bankClient) throws IOException{
         List<String> fromCredits = db.loadFromCredits();
+        List<String> fromLogs = db.loadFromLogs();
         Scanner in = new Scanner(System.in);
         System.out.println("What sum do you need?");
         String sum, choice;
@@ -89,22 +94,34 @@ public class OperationsRepository implements Operations {
                 2. 6 month
                 3. 12 month
                 4. 24 month""");
-        while (true){
+        while (true) {
             choice = in.nextLine();
-            if(choice.equals("1") || choice.equals("2") || choice.equals("3")
-                    || choice.equals("4")){
-                if(choice.equals("1")) choice = "3";
-                if(choice.equals("2")) choice = "6";
-                if(choice.equals("3")) choice = "12";
-                if(choice.equals("4")) choice = "24";
+            if (choice.equals("1") || choice.equals("2") || choice.equals("3")
+                    || choice.equals("4")) {
+                if (choice.equals("1")) choice = "3";
+                if (choice.equals("2")) choice = "6";
+                if (choice.equals("3")) choice = "12";
+                if (choice.equals("4")) choice = "24";
                 break;
-            }else {
+            } else {
                 System.out.println("Try again!");
             }
-            fromCredits.add(db.serializeCredit(new Credit(bankClient.getUserId(),Integer.parseInt(sum),
-                    Integer.parseInt(choice), 25, false)));
-            db.saveToCredits(fromCredits);
         }
+        fromLogs.add("Credit was taken!");
+        fromCredits.add(db.serializeCredit(new Credit(bankClient.getUserId(),Integer.parseInt(sum),
+                Integer.parseInt(choice), 25, false)));
+        db.saveToCredits(fromCredits);
+        db.saveToLogs(fromLogs);
+    }
+
+    public void sortChanges() throws IOException{
+        List<String> buf = new ArrayList<>();
+        for (String s: db.loadFromChanges()) {
+            if(!s.equals("")){
+                buf.add(s);
+            }
+        }
+        db.saveToChanges(buf);
     }
 
 }

@@ -1,25 +1,23 @@
 package com.financialsystemmanagement.users;
 
-import java.util.List;
-
 public class BankClient extends User{
-    private String passportNumber;
-    private String identificationNumber;
-    private String phoneNumber;
-    private String email;
-    private List<Integer> banksList;
+    private final String passportNumber;
+    private final String identificationNumber;
+    private final String phoneNumber;
+    private final String email;
+    private final int bankId;
     private int moneyCount = 5000;
     private boolean isBlocked = false;
 
     public BankClient(int userId, String personalName, String password, String passportNumber, String identificationNumber,
-                      String phoneNumber, String email, int moneyCount, List<Integer> banksList, boolean isBlocked){
+                      String phoneNumber, String email, int moneyCount, int bankId, boolean isBlocked){
         super(personalName,password, userId);
         this.isBlocked = isBlocked;
         this.passportNumber = passportNumber;
         this.identificationNumber = identificationNumber;
         this.phoneNumber = phoneNumber;
         this.email = email;
-        this.banksList = banksList;
+        this.bankId = bankId;
         this.moneyCount = moneyCount;
     }
 
@@ -31,8 +29,8 @@ public class BankClient extends User{
         return isBlocked;
     }
 
-    public List<Integer> getBanksList() {
-        return banksList;
+    public int getBankId() {
+        return bankId;
     }
 
     public int getMoneyCount() {

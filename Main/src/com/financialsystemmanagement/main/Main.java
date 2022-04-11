@@ -44,8 +44,7 @@ public class Main{
 
         while(true){
             mainMenu();
-            personalRP.showTransfers(db.loadFromChanges(), clientRP);
-            operationsRP.showInstallments(clientRP);
+            operationsRP.sortChanges();
             choice = in.nextLine();
             switch (choice) {
                 case "1":
@@ -69,7 +68,8 @@ public class Main{
                         switch (choice) {
                             case "1":
                                 while (true) {
-                                    loginClient = bankLoginMenu(clients, clientRP, bankRP.findBankById(id));
+                                    loginClient = bankLoginMenu(db.loadFromClients(),
+                                            clientRP, bankRP.findBankById(id), db);
                                     if (loginClient != null) {
                                         System.out.println("Welcome " + loginClient.getPersonalName() + "!");
                                         break;
@@ -81,7 +81,8 @@ public class Main{
                                     while (true) {
                                         choice = in.nextLine();
                                         if(choice.equals("1") || choice.equals("2") || choice.equals("3")
-                                                || choice.equals("4")|| choice.equals("5")|| choice.equals("6")){
+                                                || choice.equals("4")|| choice.equals("5")|| choice.equals("6")
+                                                || choice.equals("7")){
                                             break;
                                         }
                                     }
@@ -93,18 +94,12 @@ public class Main{
                                             }
                                             clientRP.makeTransfer(loginClient, id);
                                         } break;
-                                        case "2": {
-                                            System.out.println("What sum do you need?");
-                                            clientRP.moneyWithdrawal(loginClient);
-                                        }break;
+                                        case "2": clientRP.moneyWithdrawal(loginClient);break;
                                         case "5": loginClient.clientInfo();break;
-                                        case "6": isCanceled = true;break;
-                                        case "3":{
-                                            operationsRP.takeInstallment(loginClient);
-                                        }break;
-                                        case "4":{
-                                            operationsRP.takeCredit(loginClient);
-                                        }break;
+                                        case "7": isCanceled = true;break;
+                                        case "6": bankRP.addClientToBank(clientRP.addBankAccount(loginClient),id);break;
+                                        case "3": operationsRP.takeInstallment(loginClient);break;
+                                        case "4": operationsRP.takeCredit(loginClient);break;
                                     }
                                     if(isCanceled) {
                                         choice = "0";
@@ -129,47 +124,60 @@ public class Main{
                                         }
                                         if(str.equals("2")){
                                             personalRP.cancelAllActions(id, clientRP);
+                                        } else {
+                                            for (String s: db.loadFromLogs()) {
+                                                System.out.println(s);
+                                            }
                                         }
                                     }break;
                                     case "2": {
                                         System.out.println("What would you like to do?\n" +
                                                 "1. Show transfers\n" +
-                                                "2. Cancel action");
+                                                "2. Cancel action\n" +
+                                                "3. Show credits\n" +
+                                                "4. Show installments");
                                         while (true){
                                             str = in.nextLine();
-                                            if(str.equals("1") || str.equals("2")){
+                                            if(str.equals("1") || str.equals("2")|| str.equals("3")
+                                                    || str.equals("4")){
                                                 break;
                                             }
                                             System.out.println("Try again!");
                                         }
-                                        if(str.equals("1"))
-                                        personalRP.showTransfers(db.loadFromChanges(), clientRP);
-                                        else {
-                                            personalRP.cancelOperatorAction(id, clientRP);
-                                            personalRP.findOperatorByBankId(id).setCanceled(true);
+                                        switch (str){
+                                            case "1":
+                                                personalRP.showTransfers(db.loadFromChanges(), clientRP); break;
+                                            case "2":
+                                                personalRP.cancelOperatorAction(id, clientRP);
+                                                personalRP.findOperatorByBankId(id).setCanceled(true); break;
+                                            case "3": operationsRP.showCredits(clientRP); break;
+                                            case "4": operationsRP.showInstallments(clientRP);break;
                                         }
-                                        choice = "0";
                                     }break;
                                     case "3":{
                                         System.out.println("What would you like to do?\n" +
                                                 "1. Show transfers\n" +
                                                 "2. Cancel action\n" +
-                                                "3. Confirm credit");
+                                                "3. Confirm credit\n" +
+                                                "4. Show credits\n" +
+                                                "5. Show installments");
                                         while (true){
                                             str = in.nextLine();
                                             if(str.equals("1") || str.equals("2")
-                                                    || str.equals("3")){
+                                                    || str.equals("3")|| str.equals("4")|| str.equals("5")){
                                                 break;
                                             }
                                             System.out.println("Try again!");
                                         }
-                                        if(str.equals("1"))
-                                            personalRP.showTransfers(db.loadFromChanges(), clientRP);
-                                        else if(str.equals("2")){
-                                            personalRP.cancelManagerAction(id, clientRP);
-                                            personalRP.findManagerByBankId(id).setCanceled(true);
-                                        }else{
-                                            personalRP.confirmCredit(clientRP);
+                                        switch (str){
+                                            case "1":
+                                                personalRP.showTransfers(db.loadFromChanges(), clientRP); break;
+                                            case "2":
+                                                personalRP.cancelOperatorAction(id, clientRP);
+                                                personalRP.findOperatorByBankId(id).setCanceled(true); break;
+                                            case "4": operationsRP.showCredits(clientRP); break;
+                                            case "5": operationsRP.showInstallments(clientRP);break;
+                                            case "3": personalRP.confirmCredit(clientRP); break;
                                         }
                                         choice = "0";
                                     }break;

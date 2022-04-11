@@ -34,18 +34,18 @@ public class PersonalRepository implements Personal {
     }
 
     public BankManager findManagerByBankId(int bankId) throws IOException{
-        for (String s: db.loadFromPersonal()) {
-            if(db.deserializeManager(s).getUserId() == bankId){
-                return db.deserializeManager(s);
+        for (BankManager bm: db.deserializeManager(db.loadFromPersonal())) {
+            if(bm.getUserId() == bankId){
+                return bm;
             }
         }
         return null;
     }
 
     public BankOperator findOperatorByBankId(int bankId) throws IOException{
-        for (String s: db.loadFromPersonal()) {
-            if(db.deserializeOperator(s).getUserId() == bankId){
-                return db.deserializeOperator(s);
+        for (BankOperator bo: db.deserializeOperator(db.loadFromPersonal())) {
+            if(bo.getUserId() == bankId){
+                return bo;
             }
         }
         return null;
@@ -59,10 +59,11 @@ public class PersonalRepository implements Personal {
         int a = 0;
         for (String s: fromCredits) {
             if(!db.deserializeCredit(s).isConfirmed()){
-                System.out.println(a++ + ". " + client.findClientById(db.deserializeCredit(s).
+                System.out.println(a + ". " + client.findClientById(db.deserializeCredit(s).
                         getUserId()).getPersonalName() + " ->" +
                         db.deserializeCredit(s).getCreditInfo());
             }
+            a++;
         }
         System.out.println("What credit would you like to confirm?");
         while(true){
@@ -97,12 +98,14 @@ public class PersonalRepository implements Personal {
                 str = in.nextLine();
                 if (isInteger(str)) {
                     String[] buf = fromChanges.get(Integer.parseInt(str)).split("/");
-                    client.autoTransfer(client.findClientById(Integer.parseInt(buf[1])),
-                            client.findClientById(Integer.parseInt(buf[0])),
-                            Integer.parseInt(buf[2]));
-                    fromChanges.set(Integer.parseInt(str), "");
-                    db.saveToChanges(fromChanges);
-                    break;
+                    if(!fromChanges.get(Integer.parseInt(str)).equals("")) {
+                        client.autoTransfer(client.findClientById(Integer.parseInt(buf[1])),
+                                client.findClientById(Integer.parseInt(buf[0])),
+                                Integer.parseInt(buf[2]));
+                        fromChanges.set(Integer.parseInt(str), "");
+                        db.saveToChanges(fromChanges);
+                        break;
+                    }
                 }
             }
         } else{
@@ -135,6 +138,7 @@ public class PersonalRepository implements Personal {
     }
 
     public void cancelAllActions(int bankId, Client client) throws IOException{
+        List<String> fromLogs = db.loadFromLogs();
         List<String> fromChanges = db.loadFromChanges();
         for (String s: fromChanges) {
             if (!s.equals("")) {
@@ -147,6 +151,8 @@ public class PersonalRepository implements Personal {
                 }
             }
         }
+        fromLogs.add("All actions was added!");
+        db.saveToLogs(fromLogs);
         db.saveToChanges(fromChanges);
     }
 

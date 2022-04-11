@@ -2,9 +2,6 @@ package com.financialsystemmanagement.clientbuilder;
 
 import com.financialsystemmanagement.users.BankClient;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class ClientBuilder implements Builder {
     private int userId;
     private String personalName;
@@ -13,7 +10,7 @@ public class ClientBuilder implements Builder {
     private String identificationNumber;
     private String phoneNumber;
     private String email;
-    private List<Integer> banksList = new ArrayList<>();
+    private int bankId;
     private int moneyCount = 5000;
     private boolean isBlocked = false;
 
@@ -24,8 +21,8 @@ public class ClientBuilder implements Builder {
     }
 
     @Override
-    public ClientBuilder setBankList(List<Integer> list) {
-        this.banksList = list;
+    public ClientBuilder setBankId(int list) {
+        this.bankId = list;
         return this;
     }
 
@@ -80,7 +77,7 @@ public class ClientBuilder implements Builder {
 
     public BankClient getResult(){
         return new BankClient(userId,personalName,password,passportNumber,identificationNumber,
-                phoneNumber,email,moneyCount,banksList,isBlocked);
+                phoneNumber,email,moneyCount,bankId,isBlocked);
     }
 
 }

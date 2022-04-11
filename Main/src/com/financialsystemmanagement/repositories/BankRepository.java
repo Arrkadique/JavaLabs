@@ -28,10 +28,8 @@ public class BankRepository implements Bank {
     }
 
     public void addClientToBank(BankClient client, int bankId) throws IOException{
-        List<String> fromClients = db.loadFromClients();
         List<String> fromBank = db.loadFromBank();
-        fromClients.add(db.serializeClient(client));
-        Banks banks = new Banks();
+        Banks banks;
         for (String s: fromBank) {
             if(bankId == db.deserializeBank(s).getBankId()){
                 banks = db.deserializeBank(s);
@@ -40,7 +38,6 @@ public class BankRepository implements Bank {
                 System.out.println("ADDED");
             }
         }
-        db.saveToClients(fromClients);
         db.saveToBank(fromBank);
     }
 

@@ -9,4 +9,5 @@ public interface Operations {
     void takeInstallment(BankClient bankClient) throws IOException;
     void showCredits(Client client) throws IOException;
     void takeCredit(BankClient bankClient) throws IOException;
+    void sortChanges() throws IOException;
 }
