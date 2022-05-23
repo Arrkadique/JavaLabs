@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.canvas.Canvas?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.ColorPicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.paint.Color?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="730.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.paintfx.Controller">
+   <children>
+      <AnchorPane prefHeight="54.0" prefWidth="730.0" style="-fx-background-color: fcf78b;">
+         <children>
+            <ChoiceBox fx:id="choiсeBox" layoutX="14.0" layoutY="14.0" prefWidth="150.0" style="-fx-background-color: f7f5cb;" />
+            <TextField fx:id="lineWidth" layoutX="337.0" layoutY="14.0" prefHeight="24.0" prefWidth="56.0" promptText="Width" style="-fx-background-color: f7f5cb;" />
+            <CheckBox fx:id="filler" layoutX="408.0" layoutY="17.0" mnemonicParsing="false" text="Filler" />
+            <ColorPicker fx:id="colorPickerLine" layoutX="171.0" layoutY="14.0" promptText="set color" style="-fx-background-color: f7f5cb;">
+               <value>
+                  <Color red="0.07894736528396606" green="0.07748538255691528" blue="0.07748538255691528" />
+               </value>
+            </ColorPicker>
+            <Button fx:id="undoButton" layoutX="507.0" layoutY="14.0" mnemonicParsing="false" text="Undo" />
+            <Button fx:id="redoButton" layoutX="587.0" layoutY="14.0" mnemonicParsing="false" text="Redo" />
+         </children>
+      </AnchorPane>
+      <AnchorPane layoutY="481.0" prefHeight="19.0" prefWidth="730.0" style="-fx-background-color: fcf78b;">
+         <children>
+            <Label layoutX="582.0" layoutY="2.0" prefHeight="16.0" prefWidth="56.0" text="Label" fx:id="xLabel" />
+            <Label fx:id="yLabel" layoutX="650.0" layoutY="2.0" prefHeight="16.0" prefWidth="56.0" text="Label" />
+         </children></AnchorPane>
+      <Canvas fx:id="Canvas" height="430.0" layoutY="50.0" onMouseClicked="#MouseClicked" onMouseDragged="#MouseDragged" onMouseMoved="#MouseMoved" onMousePressed="#MousePressed" onMouseReleased="#MouseReleased" width="730.0" />
+   </children>
+</AnchorPane>
